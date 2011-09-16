@@ -1,0 +1,9 @@
+Dear <%= @order.name %>
+
+Thank you for your recent order from the Class of 1967 45th Reunion Store!
+
+You ordered the following items:
+
+<%= render @order.line_items %>
+
+We'll send you a separate e-mail shortlt before the reunion concerning the status of this order and any other order you place via the reunion web site.

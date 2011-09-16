@@ -1,0 +1,60 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Option item:</b>
+  <%= @reunion_option.option_item %>
+</p>
+
+<p>
+  <b>Category:</b>
+  <%= @reunion_option.category %>
+</p>
+
+<p>
+  <b>Price:</b>
+  <%= @reunion_option.price %>
+</p>
+
+<p>
+  <b>S and h cost:</b>
+  <%= @reunion_option.s_and_h_cost %>
+</p>
+
+<p>
+  <b>Sale price:</b>
+  <%= @reunion_option.sale_price %>
+</p>
+
+<p>
+  <b>Store initial quantity:</b>
+  <%= @reunion_option.store_initial_quantity %>
+</p>
+
+<p>
+  <b>On hand quantity:</b>
+  <%= @reunion_option.on_hand_quantity %>
+</p>
+
+<p>
+  <b>Size:</b>
+  <%= @reunion_option.size %>
+</p>
+
+<p>
+  <b>Color:</b>
+  <%= @reunion_option.color %>
+</p>
+
+<p>
+  <b>Note:</b>
+  <%= @reunion_option.note %>
+</p>
+
+<p>
+  <b>Image url:</b>
+  <%= @reunion_option.image_url %>
+</p>
+
+
+<%= link_to 'Edit', edit_reunion_option_path(@reunion_option) %> |
+<%= link_to 'Back', reunion_options_path %>

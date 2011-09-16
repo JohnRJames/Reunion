@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  reunion_option: ruby
+  cart: one
+
+two:
+  reunion_option: ruby
+  cart: one

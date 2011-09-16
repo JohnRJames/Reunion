@@ -1,0 +1,233 @@
+rails new reunion
+cd reunion
+rails generate scaffold ReunionOptions option_item:string category:string price:decimal s_and_h_cost:decimal sale_price:decimal store_initial_quantity:integer  on_hand_quantity:integer size:string color:string note:text image_url:string 
+# Scaffold generate a migration file for the project.  We can edit the migration file to change the precision and decimal 
+# places of the data to be usd in the project - see page 63
+rake db:migrate
+rails s
+
+# Need to edit the /views/reunion_options/index.html file to set up the view for the reunion options entered using 
+# the seeds.rb file (see page 70).  NOTE: to add the paginate feature for multiple pages need to modify the Gemfile
+# to add the paginate capability - this will be done after adding the ability to order reunion option items.  When
+# pagination is done - we will go back and add the following line to the reunion_options view file (index.html)
+# last line: <p><%= will_paginate @reunion_options %></p>
+
+
+
+rake db:seed
+
+# the above sequence gets us to the validation steps to validate data entry - see page 76
+#   -  Need to add validation requirements to the model in the reunion_options.rb file
+#   -  Also need to add valid test data to the functional tests listed in /tests/functional/reunion_optionscontroller_test.rb file
+#      - Need valid test data to pass the "rake test"" check  -- See changes on page 79
+
+rake test
+
+# to go back to the earlier database - enter ==> rake db:rollback
+# need to add unit tests in the test/unit/reunion_option_test.rb file - see page 81
+
+
+rails generate controller reunion_store index
+rake db:migrate
+
+# need to build a reunion store index - see page 89 of the text
+#  rails generate controller reunion_store index
+rake test
+# next edit config/routes.rb to make the reunion store index the root URL for the reunion website
+#  do this by adding the line  >> root :to => "reunion_store#index" to the routes.rb file
+#NOTE for the redirect_to action we need to add a blank to the default root as redirect_to ''
+#
+# NOTE execute rake routes to make sure the reunion store is listed as the root
+#
+# Then edit the view in the file app/views/reunion_store/index.html.erb
+# NOTE - need to add pagination later and add the following to the reunion store index page:
+# 
+#  <!-- START_HIGHLIGHT -->
+#  <p><%= will_paginate @reunion_options %></p>
+#  <!-- END_HIGHLIGHT -->
+
+
+
+# next generate a cart class with the scaffold command
+
+rails generate scaffold cart
+
+# And create the database table for the new class of objects
+
+rake db:migrate
+
+# Next edit the application_controller.rb file to capture the cart_id number associated with a given cart  see page 102 of the text 
+
+#next generate a controller for the line_item associated with a reunion_option ordered in a given cart
+rails generate scaffold line_item reunion_option_id:integer cart_id:integer
+
+#  and create the corresponding table for the order line item
+
+rake db:migrate
+
+# now open the newly created cart.rb file in the app/models folder to add a hasmany relation between carts and line_items
+# also require that all line items associated with a given cart must be destroyed if the cart is destroyed
+#  has_many :line_items, :dependent => :destroy
+#  for a given line item indicate that it belongs to a reunion_option and a cart  - page 103
+#class LineItem < ActiveRecord::Base
+#    belongs_to  :reunion_option	
+#    belongs_to  :cart
+#end
+
+#after creating the cart, we need to add a button to the reunion_store index page for each reunion option item and use the session 
+#capability to keep track of what is being ordered in a given cart (see pages 106-109)
+
+#to add a capability to count each new addition of a given reunion option, we need to add a count capability 
+rails generate migration add_quantity_to_line_items quantity:integer
+
+#to combine items in a cart we ned to generate another migration (see page 113 of the text)
+rails generate migration combine_items_in_cart
+
+# and edit the associated migration file ...combine_items_in_cart.rb in the db folder - NOTE: this 
+# action adds the capability to add and delete items from a cart
+
+# execute a db migration
+rake db:migrate
+
+#to complete the cart we need to be able to delete items from the cart so we edit the 
+#   views/cart/show.html.erb file to add an "empty cart" option.  NOTE: I had trouble getting the store_url reference
+#  to work so had to substitute the actual URL to the reunion_store_url for the carts_controller.rb file and the 
+#  carts_controller_test.rb file
+
+#NOTE for the redirect_to action we need to add a balnk to the default root as redirect_to ''
+# AJAX is used to improve response by having processing done at the server see Chapter 11 of the text pages 125-143
+
+# Next add a capability to check out of the cart.  Begin by defining an order by a reunion attendee
+
+rails generate scaffold order name:string  address:text email:string pay_type:string
+rails generate migration add_order_id_to_line_item order_id:integer
+rake db:migrate
+
+# to paginate add the paginate gem to the Gemfile
+# gem 'will_paginate', '>= 3.0.pre'
+# and execute the "bundle install" command 
+# and then create a script for load_orders.rb and execute the script
+rails runner script/load_orders.rb
+
+############## CREATE AN EMAIL SYSTEM FOR CLASS ADMINISTRATORS ###################
+
+#We can use the rails mailer to send a note about the order
+rails generate mailer Notifier order_received order_shipped
+
+#We can use a rails USER class to administer the web site options for the reunion
+rails generate scaffold user name:string hashed_password:string salt:string
+rake db:migrate
+
+#We can use a sessions controller and an admin controller to control access to portions of the site
+rails generate controller sessions new create destroy
+rails generate controller admin index
+
+# NOTE - the set of USERS are the administrators.  Access to the admin pages is 
+# restricted to those folks who are members of the set of USERS
+
+#******** ADDING EMAIL AND AUTHENTICATION FOR CLASSMATES/FAMILY MEMBERS  **************
+#NOTE: The general email system is set for use by all classmates and reunion attendeess 
+# who are members of the set of possible reunion attendees (the '67 reunion email roster
+# these individuals are members of the set of REUNIONATTENDEES  
+# [7} add the devise gem to the gemfile:  gem 'devise', '1.1.5'
+# [8] Once the gemfile  file is saved, run the bundler, which checks to make sure the gem exists, 
+#  and downloads it if it doesn't.
+bundle install
+# [9] Now install the initializers for devise:
+rails g devise:install
+# [10] If it all is working correctly up to this point, you can generate the devise user, which 
+#  will add a full authentication setup to your site:
+rails g devise User
+#  [11] Now before we migrate to create the users table, we have a couple of options to configure 
+#  for the email confirmation. It is disabled by default, so we must enable it. To begin, open up 
+#  the directory for migration files [db/migrations]. One file will have a timestamp, and end 
+#  with ["_devise_create_users.rb"]. In that file uncomment these two lines:
+#  t.confirmable
+#  add_index :users, :confirmation_token,   :unique => true
+# [12] Once you have done that, save the file, and then run:
+rake db:migrate
+#NOTE for the USMA environment I had to execute "bundle exec rake db:migrate"
+#[13] Open up the [app/models/user.rb], and add the confirmable option to the class:
+devise :database_authenticatable, :registerable,
+    :recoverable, :rememberable, :trackable, :validatable, :confirmable
+#[14] Now in [config/environment/development.rb], tell the mailer what URL the user will click on 
+#  when he/she receives the email. Since we are running our server locally, 
+# I will use "localhost:7831". 
+# config.action_mailer.default_url_options = { :host => 'localhost:7831' }
+
+
+#SETTING THE EMAIL SERVER INFORMATION#
+#[15] Also in the [config/environment/development.rb] add these lines to tell it what type and 
+# where our mail server is:
+#config.action_mailer.delivery_method = :smtp
+#  config.action_mailer.smtp_settings = {
+#     :address => "usmasvddeecs1",
+#     :domain => "eecs.usma.edu"
+#  }
+# Save this file. 
+
+# DEVISE NAVIGATION LINK GENERATION
+# [16] We need to set up some links to help us navigate devise. Open up the file 
+# [app/views/layouts/application.html.erb], and add in some links (place this code after 
+# the "yield" statement (around line 43 of the reunion project file):
+#<div id="user_nav">
+#    <% if user_signed_in? %>
+#      Signed in as <%= current_user.email %>. Not you?
+#      <%= link_to "Sign out", destroy_user_session_path %>
+#    <% else %>
+#      <%= link_to "Sign up", new_user_registration_path %> or <%= link_to "sign in" , 
+#new_user_session_path %>
+#    <% end %>
+#</div>
+
+# [17] Now we will have links to perform basic registration on our site. However, although our 
+# navigation is set up, a user could add and view reunion options without being logged in. To prevent this, 
+# we can authenticate the user on the reunion store controller by adding the following line to the
+# top of the controller (2nd line in [app/controllers/reunion_store_controller.rb]):
+# before_filter :authenticate_user!, :except => [:show, :index]
+
+# [18] This prevents the action, and to make our interface show the links only when authenticated, 
+# we can go into the [app/views/reunion_options/index.html.erb}, and surround the edit and destroy links with 
+# an if statement that checks to see if the user is signed in or not:
+
+
+<% if user_signed_in? %>
+    <td><%= link_to "Edit", edit_cadet_path(cadet) %></td>
+    <td><%= link_to "Destroy", cadet, :confirm => 'Are you sure?', :method => :delete %></td>
+<% end %>
+
+NOTE: 
+(1) use ReunionOptions as the class of options availoable for the reunion.  These include: (1) items for sale (three categories: childrensclothing, registrationpackage, and storememorabilia, Sports (two categories golf and tennis), and tours (one tour category) and there are many ReunionOptionOrdersfor ReunionOptions 
+
+(2) use ReunionOptionOrders as the class of orders from the store (ie - the set of cart orders for each ReunionAttendee (two categories of attendees: classmate or family member) and there can be a number of ReunionBagOrders (individual orders)
+
+(3) use ReunionAttendees as the class of persons authorized to submit orders for ReunionBagOrder items selected from the ReunionStore.  There are two categories of attendees: classmate or family member and each attendee can submit a number of ReunionBagOrders (individual orders).
+
+		MAPPING OF DEPOT VIEWS TO CLASS_REUNION VIEWS
+
+DEPOT								CLASSREUNION
+admin								reunionadmin
+carts								reunioncarts
+layouts								reunionlayouts
+line_items							reunionoptionitems
+notifier							reunionnotifier
+orders								reunionoptionorders
+products							reunionoptions  
+					
+#: build ReunionOptions first to have a reunion option model, a set of views, and a set of unit tests.
+sessions							reunionsessions
+store								reunionstore
+users								reunionusers (these are the administrators)
+                                                                attendees
+
+CONTROLLERS:
+  need a reunion_options controller to eanble the reunion committee to administer the ClassReunion application.  This is generated with the creation of the ReunionOptions class scaffold. (see page 62 of the text)
+  need a reunion_store controller to interact with the reunion_attendees  (page 89 of teh text)
+
+INITIALLY SET UP THE OPTION ITEMS AND THE UNIT TESTS (chapter 6 of the text)
+SEED THE SET OF DATA:
+  edit the seeds.rb file to have the initial set of reunion options
+  
+
+SEED THE SET OF DATA:
+  edit the seeds.rb file to have the initial set of reunion options

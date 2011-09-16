@@ -1,0 +1,49 @@
+<div id="reunion_options_list">
+	
+<h1>Listing of Reunion Options</h1>
+	
+ <table>
+<% @reunion_options.each do |reunion_option| %>
+    <tr class="<%= cycle('list_line_odd', 'list_line_even') %>">
+
+      <td>
+        <%= image_tag(reunion_option.image_url, :class => 'list_image') %>
+      </td>
+ 	  <td class = "list_description_1">
+ 	  	<em>
+ 	  	<dt> Category: <%= reunion_option.category %> </dt>
+ 	  	<dt> Price: <%= reunion_option.price  %> </dt>
+		<dt> S and H cost: <%= reunion_option.s_and_h_cost  %> </dt>
+ 	  	<dt> Sale price:  <%= reunion_option.sale_price %> </dt>  
+ 	        <dt> Init. Quan.:  <%= reunion_option.store_initial_quantity %>  </dt>
+ 	  	</em>          
+      </td>
+      
+      <td class="list_description_2"> 
+ 	  	<dt> Curr. Quan<%= reunion_option.on_hand_quantity %></dt>
+ 	  	<dt> Size:  <%= reunion_option.size %> </dt>             
+ 	  	<dt> Color: <%= reunion_option.color %>  </dt>  
+        <dl> 
+                <dt><%= reunion_option.option_item %></dt>
+                <dd><%= truncate(strip_tags(reunion_option.note),
+                 :length => 80) %></dd>
+        </dl>
+      </td>
+
+      <td class="list_actions">
+          <%= link_to 'Show', reunion_option %><br/>
+          <%= link_to 'Edit', edit_reunion_option_path(reunion_option) %><br/>
+          <%= link_to 'Destroy', reunion_option, 
+                    :confirm => 'Are you sure?',
+                    :method => :delete %>
+    </td>
+    </tr>
+  <% end %>
+</table>
+</div>
+
+<br />
+
+<%= link_to 'New Reunion option', new_reunion_option_path %>
+<p><%= will_paginate @reunion_options %></p>
+

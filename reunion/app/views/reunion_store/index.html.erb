@@ -1,0 +1,26 @@
+<% if notice %>
+<p id="notice"><%= notice %></p>
+<% end %>
+
+<h1>45th Reunion Registration and Store</h1>
+
+<% @reunion_options.each do |reunion_option| %>
+  <div class="entry">
+    <%= image_tag(reunion_option.image_url) %>
+    <h3><%= reunion_option.option_item %></h3>
+    <%= sanitize(reunion_option.note) %>
+    <div class="price_line">
+      <!-- START:currency -->
+      <span class="price"><%= number_to_currency(reunion_option.sale_price) %></span>
+      <!-- END:currency -->
+      <%= button_to 'Add to Cart', line_items_path(:reunion_option_id => reunion_option),
+        :remote => true %>
+    </div>
+  </div>
+<% end %>
+
+  <!-- START_HIGHLIGHT -->
+  <p><%= will_paginate @reunion_options %></p>
+  <!-- END_HIGHLIGHT -->
+
+

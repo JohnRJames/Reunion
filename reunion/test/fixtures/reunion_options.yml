@@ -1,0 +1,42 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  option_item: MyString
+  category: MyCategory
+  price: 9.99
+  s_and_h_cost: 9.99
+  sale_price: 9.99
+  store_initial_quantity: 1
+  on_hand_quantity: 1
+  size: MyString
+  color: MyString
+  note: MyText
+  image_url: MyString.png
+
+two:
+  option_item: MyString
+  category: MyCategory
+  price: 9.99
+  s_and_h_cost: 9.99
+  sale_price: 9.99
+  store_initial_quantity: 1
+  on_hand_quantity: 1
+  size: MyString
+  color: MyString
+  note: MyText
+  image_url: MyString.png
+
+#START:ruby
+ruby: 
+  option_item: MyString
+  category: MyCategory
+  price: 9.99
+  s_and_h_cost: 9.99
+  sale_price: 9.99
+  store_initial_quantity: 1
+  on_hand_quantity: 1
+  size: MyString
+  color: MyString
+  note: MyText
+  image_url: ruby.png
+#END:ruby

@@ -1,0 +1,61 @@
+<%= form_for(@reunion_option) do |f| %>
+  <% if @reunion_option.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@reunion_option.errors.count, "error") %> prohibited this reunion_option from being saved:</h2>
+
+      <ul>
+      <% @reunion_option.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :option_item %><br />
+    <%= f.text_field :option_item %>
+  </div>
+  <div class="field">
+    <%= f.label :category %><br />
+    <%= f.text_field :category %>
+  </div>
+  <div class="field">
+    <%= f.label :price %><br />
+    <%= f.text_field :price %>
+  </div>
+  <div class="field">
+    <%= f.label :s_and_h_cost %><br />
+    <%= f.text_field :s_and_h_cost %>
+  </div>
+  <div class="field">
+    <%= f.label :sale_price %><br />
+    <%= f.text_field :sale_price %>
+  </div>
+  <div class="field">
+    <%= f.label :store_initial_quantity %><br />
+    <%= f.text_field :store_initial_quantity %>
+  </div>
+  <div class="field">
+    <%= f.label :on_hand_quantity %><br />
+    <%= f.text_field :on_hand_quantity %>
+  </div>
+  <div class="field">
+    <%= f.label :size %><br />
+    <%= f.text_field :size %>
+  </div>
+  <div class="field">
+    <%= f.label :color %><br />
+    <%= f.text_field :color %>
+  </div>
+  <div class="field">
+    <%= f.label :note %><br />
+    <%= f.text_area :note %>
+  </div>
+  <div class="field">
+    <%= f.label :image_url %><br />
+    <%= f.text_field :image_url %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
